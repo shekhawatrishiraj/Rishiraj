@@ -1,0 +1,5 @@
+# Debate Memory
+# Past debate resolutions are recorded here automatically after each /debate session.
+# Format follows the template in SKILL.md → Memory Write-Back section.
+
+debates: []

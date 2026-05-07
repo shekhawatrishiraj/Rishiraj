@@ -1,0 +1,18 @@
+schema_version: "1.0.0"
+last_updated: ""
+total_patterns: 0
+
+# Pattern index — one entry per pattern file
+# Fields: id, name, category, tags, confidence, file
+# ~50 bytes per entry; scan this before opening individual pattern files
+
+patterns: []
+
+# Example entry (uncomment when adding first pattern):
+# patterns:
+#   - id: stat-card-horizontal
+#     name: Horizontal Stat Card
+#     category: cards
+#     tags: [stat, metric, kpi, number, horizontal, icon]
+#     confidence: high
+#     file: patterns/stat-card-horizontal.md

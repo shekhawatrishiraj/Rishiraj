@@ -1,0 +1,1 @@
+scan and do sanity check of recent changes with /vercel-react-best-practices, build for vercel, commit and push
