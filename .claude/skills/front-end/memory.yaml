@@ -1,0 +1,1788 @@
+# QA Skill Memory
+# Purpose: Persistent learning storage for /qa skill
+# Usage: Skill reads before each run, writes after completion
+
+schema_version: "1.1.0"
+last_updated: "2026-01-27T15:35:00"
+
+# ─────────────────────────────────────────────────────────────
+# LEARNINGS INDEX
+# Structured to mirror Rules/ and design-knowledge/ modules
+# ─────────────────────────────────────────────────────────────
+
+learnings:
+  # ── Core (Rules/core.md + design-knowledge/core.md) ──
+  core_tokens:
+    module_ref:
+      rules: "Rules/core.md"
+      knowledge: "design-knowledge/core.md"
+    spacing:
+      common_issues:
+        - "Arbitrary px values in margin/padding"
+        - "Hardcoded gap values"
+      quick_fix: "Replace with --spacing-{n} token"
+      detection: "grep -rn 'margin:\\s*[0-9]' --include='*.tsx'"
+    colors:
+      common_issues:
+        - "Hex codes in JSX"
+        - "Hardcoded rgba values"
+      quick_fix: "Replace with CSS custom properties using theme() tokens"
+      detection: "grep -rn '#[0-9a-fA-F]\\{3,6\\}' --include='*.tsx'"
+    radius:
+      common_issues:
+        - "Hardcoded border-radius"
+      quick_fix: "Replace with --radius-{n} token"
+      detection: "grep -rn 'border-radius:\\s*[0-9]' --include='*.tsx'"
+
+  # ── Typography (Rules/typography.md + design-knowledge/typography.md) ──
+  typography:
+    module_ref:
+      rules: "Rules/typography.md"
+      knowledge: "design-knowledge/typography.md"
+    common_issues:
+      - "Headings missing text-balance"
+      - "Body text missing text-pretty"
+      - "Tables without tabular-nums"
+      - "Custom letter-spacing"
+    quick_fix: "Add text-balance/text-pretty, use tabular-nums in tables"
+    detection: "grep -rn 'tracking-\\|letter-spacing:' --include='*.tsx'"
+
+  # ── Motion (Rules/motion.md + design-knowledge/motion.md) ──
+  motion:
+    module_ref:
+      rules: "Rules/motion.md"
+      knowledge: "design-knowledge/motion.md"
+    common_issues:
+      - "Unapproved @keyframes animations"
+      - "Animating layout properties (width, height)"
+      - "Custom easing without approval"
+      - "Missing prefers-reduced-motion"
+    quick_fix: "Use transitions only, animate transform/opacity, honor reduced-motion"
+    detection: "grep -rn '@keyframes\\|cubic-bezier' --include='*.css'"
+
+  # ── Icons (Rules/icons.md) ──
+  icons:
+    module_ref:
+      rules: "Rules/icons.md"
+      knowledge: null
+    common_issues:
+      - "Wrong icon library (heroicons, feather)"
+      - "Incorrect icon sizes"
+      - "Missing aria-label on icon buttons"
+    quick_fix: "Import from lucide-react, use 16/20/24px (size-4/size-5/size-6)"
+    detection: "grep -rn 'heroicons\\|feather' --include='*.tsx'"
+
+  # ── Mobile (Rules/mobile.md) ──
+  mobile:
+    module_ref:
+      rules: "Rules/mobile.md"
+      knowledge: null
+    common_issues:
+      - "Touch targets under 44px"
+      - "Multi-column forms on mobile"
+      - "Using h-screen instead of h-dvh"
+      - "Missing safe-area-inset"
+    quick_fix: "44px min touch, single-col forms, h-dvh, safe-area-inset"
+    detection: "grep -rn 'h-screen' --include='*.tsx'"
+
+  # ── States (Rules/states.md + design-knowledge/states.md) ──
+  states:
+    module_ref:
+      rules: "Rules/states.md"
+      knowledge: "design-knowledge/states.md"
+    common_issues:
+      - "Missing hover/focus states"
+      - "No loading state"
+      - "Empty state not implemented"
+      - "Edge cases not considered (0, 1, 100+ items)"
+    quick_fix: "Add Tailwind state utilities (hover:, focus:, disabled:)"
+    detection: "grep -rn 'hover:\\|focus:\\|disabled:' --include='*.tsx'"
+
+  # ── Forms (Rules/forms.md + design-knowledge/forms.md) ──
+  forms:
+    module_ref:
+      rules: "Rules/forms.md"
+      knowledge: "design-knowledge/forms.md"
+    common_issues:
+      - "Validation only on submit"
+      - "Errors not inline with fields"
+      - "Multi-column layout on mobile"
+    quick_fix: "Real-time validation, inline errors, single column"
+    detection: null
+
+  # ── Modals (Rules/modals.md + design-knowledge/modals.md) ──
+  modals:
+    module_ref:
+      rules: "Rules/modals.md"
+      knowledge: "design-knowledge/modals.md"
+    common_issues:
+      - "Using modal when inline expansion better"
+      - "Destructive actions without AlertDialog"
+      - "Generic 'OK/Cancel' buttons"
+    quick_fix: "Use AlertDialog for destructive, specific button labels"
+    detection: null
+
+  # ── Errors/Copy (Rules/errors.md + design-knowledge/copy.md) ──
+  errors:
+    module_ref:
+      rules: "Rules/errors.md"
+      knowledge: "design-knowledge/copy.md"
+    common_issues:
+      - "Generic error messages ('Invalid')"
+      - "Errors far from action trigger"
+      - "No recovery suggestion"
+    quick_fix: "Specific errors inline, suggest next action"
+    detection: null
+
+  # ── Interactions (Rules/interactions.md) ──
+  interactions:
+    module_ref:
+      rules: "Rules/interactions.md"
+      knowledge: null
+    common_issues:
+      - "Blocking paste in inputs"
+      - "Using h-screen instead of h-dvh"
+      - "Fixed elements without safe-area-inset"
+    quick_fix: "Never block paste, use h-dvh, add safe-area-inset"
+    detection: "grep -rn 'onPaste.*preventDefault' --include='*.tsx'"
+
+  # ── Accessibility (Rules/accessibility.md) ──
+  accessibility:
+    module_ref:
+      rules: "Rules/accessibility.md"
+      knowledge: null
+    common_issues:
+      - "Missing aria-labels on icon buttons"
+      - "No focus indicators"
+      - "Insufficient color contrast"
+    quick_fix: "Add aria-label, ensure focus-visible styles, check contrast"
+    detection: "grep -rn 'aria-label' --include='*.tsx' | wc -l"
+
+  # ── Components (Rules/components.md + design-knowledge/system.md) ──
+  components:
+    module_ref:
+      rules: "Rules/components.md"
+      knowledge: "design-knowledge/system.md"
+    common_issues:
+      - "Modifying shadcn source"
+      - "Mixing primitive systems"
+      - "Not using existing project primitives"
+    quick_fix: "Wrap shadcn, use project primitives"
+    detection: null
+
+  # ── CSS (Rules/css.md) ──
+  css:
+    module_ref:
+      rules: "Rules/css.md"
+      knowledge: null
+    common_issues:
+      - "Component-level CSS files"
+      - "Inline styles"
+      - "Using !important"
+    quick_fix: "Move to globals.css, use Tailwind utilities"
+    detection: "find . -name '*.module.css' -type f"
+
+  # ── Skeleton / Loading States ──
+  skeletons:
+    module_ref:
+      rules: "Rules/states.md"
+      knowledge: "design-knowledge/states.md"
+    visual_rules:
+      background_color: "bg-muted-foreground/10"
+      borders: "none — no border on skeleton elements"
+      border_radius: "match real component (rounded-lg for cards, rounded-full for avatars)"
+      animation: "animate-pulse (Tailwind default)"
+    layout_rules:
+      first_section: "1 skeleton card only"
+      subsequent_sections: "6 skeleton cards"
+      match_dimensions: "skeleton width/height must match real component dimensions exactly"
+      tab_skeletons: "show skeleton tabs matching real tab count and width"
+    decisions:
+      - date: "2026-02-24"
+        decision: "No borders on skeleton cards — cleaner appearance"
+        rationale: "User feedback: bordered skeletons looked too busy and drew attention to empty structure"
+      - date: "2026-02-24"
+        decision: "bg-muted-foreground/10 instead of bg-muted for skeleton fill"
+        rationale: "User feedback: bg-muted was too light, needed 'a little more grey' for visibility"
+      - date: "2026-02-24"
+        decision: "First section shows only 1 skeleton card"
+        rationale: "User feedback: multiple skeletons in first section was visually overwhelming"
+
+  # ── Design Constraints ──
+  design:
+    module_ref:
+      rules: "Rules/core.md"
+      knowledge: "design-knowledge/visual-perception.md"
+    common_issues:
+      - "Gradients without explicit request"
+      - "Purple/multicolor gradients (AI anti-pattern)"
+      - "Glow effects as primary affordances"
+      - "Multiple accent colors per route"
+    quick_fix: "No gradients unless requested, one accent per route"
+    detection: "grep -rn 'bg-gradient\\|from-' --include='*.tsx'"
+
+  # ── Hierarchy (design-knowledge/hierarchy.md) ──
+  hierarchy:
+    module_ref:
+      rules: null
+      knowledge: "design-knowledge/hierarchy.md"
+    common_issues:
+      - "Competing focal points"
+      - "Multiple CTAs with equal weight"
+      - "Important content below fold without earning scroll"
+    quick_fix: "Clear visual hierarchy, primary action prominent"
+    detection: null
+
+  # ── Process (design-knowledge/process.md) ──
+  process:
+    module_ref:
+      rules: null
+      knowledge: "design-knowledge/process.md"
+    common_issues:
+      - "Happy path only design"
+      - "Copying patterns without context"
+      - "Optimizing for first impression over day-30"
+    quick_fix: "Design unhappy path first, understand pattern context"
+    detection: null
+
+# ─────────────────────────────────────────────────────────────
+# EFFECTIVE COMMANDS
+# Commands that work well for detection
+# ─────────────────────────────────────────────────────────────
+
+commands:
+  token_violations:
+    hex_colors: "grep -rn '#[0-9a-fA-F]\\{3,6\\}' --include='*.tsx' --include='*.css'"
+    arbitrary_margin: "grep -rn 'margin:\\s*[0-9]' --include='*.tsx'"
+    arbitrary_padding: "grep -rn 'padding:\\s*[0-9]' --include='*.tsx'"
+    hardcoded_radius: "grep -rn 'border-radius:\\s*[0-9]' --include='*.tsx' --include='*.css'"
+
+  component_violations:
+    inline_styles: "grep -rn 'style={{' --include='*.tsx'"
+    component_css: "find . -name '*.module.css' -type f"
+    wrong_icons: "grep -rn 'heroicons\\|feather' --include='*.tsx'"
+    rounded_full_buttons: "grep -rn 'rounded-full' --include='*.tsx' | grep -i 'button\\|btn\\|Button'"
+    raw_buttons_no_hover: "grep -rn '<button' --include='*.tsx' | grep -v 'hover:'"
+    direct_tailwind_colors: "grep -rn 'bg-emerald\\|bg-red-\\|bg-blue-\\|bg-green-\\|text-emerald\\|text-red-\\|text-blue-\\|text-green-' --include='*.tsx'"
+    custom_dropdown: "grep -rn 'click.*outside\\|mousedown.*contains\\|setOpen.*toggle' --include='*.tsx'"
+
+  state_coverage:
+    count_states: |
+      for state in hover focus active disabled; do
+        echo "$state: $(grep -rn "$state:" --include="*.tsx" | wc -l)"
+      done
+
+  accessibility:
+    aria_count: "grep -rn 'aria-label\\|aria-describedby\\|role=' --include='*.tsx' | wc -l"
+    focus_count: "grep -rn 'focus-visible\\|focus:' --include='*.tsx' | wc -l"
+
+  typography:
+    letter_spacing: "grep -rn 'tracking-\\|letter-spacing:' --include='*.tsx'"
+    text_balance: "grep -rn 'text-balance' --include='*.tsx' | wc -l"
+    tabular_nums: "grep -rn 'tabular-nums' --include='*.tsx' | wc -l"
+
+  motion:
+    keyframes: "grep -rn '@keyframes' --include='*.css'"
+    custom_easing: "grep -rn 'cubic-bezier' --include='*.css'"
+    reduced_motion: "grep -rn 'prefers-reduced-motion' --include='*.css' | wc -l"
+
+  design:
+    gradients: "grep -rn 'bg-gradient\\|from-' --include='*.tsx'"
+    glows: "grep -rn 'shadow-.*glow\\|ring-.*glow' --include='*.tsx'"
+
+  interactions:
+    paste_blocking: "grep -rn 'onPaste.*preventDefault' --include='*.tsx'"
+    h_screen: "grep -rn 'h-screen' --include='*.tsx'"
+
+# ─────────────────────────────────────────────────────────────
+# DECISIONS LOG
+# Key decisions made during QA runs
+# ─────────────────────────────────────────────────────────────
+
+decisions:
+  - date: "2026-02-23"
+    component: "Agents Page (src/app/agents/page.tsx)"
+    decision: "Use `persona === 'new-user'` check instead of `flags.isNewUser` for persona-based conditional rendering"
+    rationale: "PersonaFlags type only has hasCompletedOnboarding, hasMeetings, hasConnections, hasKnowledgeSources — no isNewUser flag. Checking persona key directly is correct. The usePersona() hook returns { persona, flags, ... } where persona is the key string ('new-user' | 'returning')."
+    module_ref: "Rules/states.md"
+    alternatives_considered:
+      - "Add isNewUser to PersonaFlags — adds redundant flag that duplicates persona key identity"
+      - "Check flags.hasCompletedOnboarding === false — less explicit, could match other future personas"
+
+  - date: "2026-02-23"
+    component: "Meetings List, Recordings List (src/app/meetings/page.tsx)"
+    decision: "Removed primary color hover on list item titles — rely on bg-accent/50 row highlight only"
+    rationale: "User requested removal. Row-level bg-accent/50 hover + cursor:pointer provides sufficient clickability signal without title color change. Simpler interaction model."
+    module_ref: "Rules/states.md"
+    alternatives_considered:
+      - "Keep text-primary title hover — removed per user request"
+      - "Underline on hover — conflicts with global no-underline rule"
+
+  - date: "2026-02-20"
+    component: "Welcome Onboarding (connect-sources, social)"
+    decision: "Use standard Input component with positioned icon instead of custom wrapper div around borderless Input"
+    rationale: "Custom wrapper (div with border + borderless Input inside) creates inconsistent height and visual weight vs standard Input used elsewhere. Standard Input with pl-9 + absolute-positioned icon maintains h-9 across all inputs in the product."
+    module_ref: "Rules/forms.md"
+    alternatives_considered:
+      - "Custom wrapper div with border + borderless Input — inconsistent height, shadow mismatch"
+      - "InputGroup component — adds unnecessary abstraction for single icon"
+
+  - date: "2026-02-20"
+    component: "Welcome Onboarding (connect-sources)"
+    decision: "shadow-none on Input and Button inside card to prevent nested shadow artifacts"
+    rationale: "Input has shadow-xs by default. Inside a card with its own border, nested shadows create visual noise and break the flat hierarchy within the card."
+    module_ref: "design-knowledge/visual-perception.md"
+    alternatives_considered:
+      - "Override at component level — affects all Inputs globally"
+      - "Accept default shadows — creates density mismatch inside card"
+
+  - date: "2026-01-27"
+    component: "TwinDemo"
+    decision: "Replaced all hex colors with CSS custom properties using design tokens"
+    rationale: "Ensures consistency with design system and enables theming"
+    module_ref: "Rules/core.md"
+    alternatives_considered:
+      - "Keep hex colors in constants object"
+      - "Use Tailwind color classes directly"
+
+  - date: "2026-01-27"
+    component: "TwinDemo"
+    decision: "Created separate CSS file with proper design tokens instead of inline styles"
+    rationale: "Better maintainability, follows CSS-first approach, enables reuse"
+    module_ref: "Rules/css.md"
+    alternatives_considered:
+      - "Convert to Tailwind classes"
+      - "Keep minimal inline styles for dynamic values"
+
+  - date: "2026-01-27"
+    component: "TwinDemo"
+    decision: "Added comprehensive accessibility attributes (aria-label, role)"
+    rationale: "Ensures video is accessible for screen readers and assistive technology"
+    module_ref: "Rules/accessibility.md"
+    alternatives_considered:
+      - "Add only basic aria-labels"
+      - "Rely on semantic HTML only"
+
+  - date: "2026-01-27"
+    component: "TwinDemo"
+    decision: "Enhanced message content to show realistic project context"
+    rationale: "Demonstrates AI assistant's value for real business scenarios vs generic tech questions"
+    module_ref: "design-knowledge/product.md"
+    alternatives_considered:
+      - "Keep original technical focus"
+      - "Mix of technical and business content"
+
+# ─────────────────────────────────────────────────────────────
+# RUN HISTORY
+# Log of all QA runs with results
+# ─────────────────────────────────────────────────────────────
+
+runs:
+  - id: "run_017"
+    date: "2026-02-23"
+    time: "16:30:00"
+    component: "Meetings + Recordings detail pages (src/app/meetings/[id]/page.tsx + src/app/meetings/page.tsx)"
+    result: "PASS"
+    score: "49/53"
+    type: "visual-hierarchy-fix + data-consistency"
+
+    checks:
+      core_tokens: 4/4    # Zero hardcoded hex — all oklch or CSS vars
+      typography: 4/4     # text-pretty on bullet items, leading-relaxed on content
+      motion: 0/0
+      icons: 1/1          # All Phosphor icons correct
+      mobile: 3/5         # Desktop-only layout (advisory)
+      states: 3/8         # Missing loading, error, empty chat states (advisory)
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4   # h-dvh, no paste blocking
+      accessibility: 4/4  # aria-labels, role=button, focus-visible, keyboard handlers
+      components: 4/4     # shadcn Tabs, Avatar, Button, Checkbox
+      css: 3/4            # 2 inline styles remain (dynamic avatar backgroundColor — acceptable)
+      design: 7/7         # No gradients, single accent, clean hierarchy
+      theming: 5/6        # oklch colors in JS (not CSS vars) — acceptable for per-user avatar colors
+
+    improvements_made:
+      visual_hierarchy:
+        - "Header: py-4 → py-3 compact, gap-1 → mt-0.5, info icon size-5 → size-4 with /60 opacity"
+        - "Chat: message gap-4 → gap-6 for breathing room, py-4 → py-6 for generous whitespace"
+        - "AI message: gap-2 → gap-3, content gap-2 → gap-1.5, leading-[22px] → leading-relaxed"
+        - "Recording controls: section headers font-semibold → font-medium text-muted-foreground (secondary)"
+        - "Metadata divider h-4 → h-3 for subtlety"
+      data_consistency:
+        - "Meeting titles now match mock-data.ts: Product Sync — Q1 Roadmap, Design Review — Onboarding Flow, Architecture Review — API Design"
+        - "Participants from mock-data: Sarah Chen (Product Lead), Mike Thompson (Engineering Lead), Priya Sharma (Design Lead), James Liu, Chen Wei"
+        - "Chat content uses MEETING_SUMMARY data: rate limiting decisions, vendor selection, Q1 metrics"
+        - "Collaborator roles match participantContext: Product Lead, Engineering Lead, Design Lead"
+        - "Listing page titles synced with detail page titles"
+      color_system:
+        - "Replaced all hardcoded hex (#FD960E, #52C41A, #4338CA, etc.) with oklch() participant colors"
+        - "Zero hex values remain in entire detail page file"
+        - "Avatar colors use oklch for perceptual uniformity across different hues"
+      typography:
+        - "text-pretty on bullet list items in AIMessage"
+        - "text-pretty on collaborator description"
+        - "leading-relaxed on AI message content for readability"
+
+    design_knowledge_applied:
+      hierarchy_md:
+        - "Position: Title most prominent at top-left (F-pattern)"
+        - "Size: Info icon reduced from size-5 to size-4 to not compete with title"
+        - "Contrast: Info icon at /60 opacity to reduce visual noise"
+        - "Whitespace: Increased message gaps (gap-6) for breathing room"
+        - "Weight: Section headers in recording controls demoted to font-medium text-muted-foreground"
+      visual_perception_md:
+        - "Density mismatch fixed: header more compact, content area more spacious"
+        - "Premium signals: generous whitespace in chat, leading-relaxed for readability"
+        - "Typography hierarchy via size/weight only — no color used for emphasis except semantic tokens"
+      core_md:
+        - "Day 30 > Day 1: optimized for reading comfort over visual impact"
+        - "Familiar > Novel: standard chat layout, no unusual patterns"
+
+    reflections:
+      what_worked: "design-knowledge hierarchy.md principles directly improved header density and chat readability"
+      what_improved: "Visual hierarchy clear across all 4 page types. Data tells a coherent story (Product Sync, Architecture Review). Zero hardcoded hex colors."
+      next_steps: "Add loading/error states. Empty chat state. 404 for unknown IDs. Dark mode verification."
+
+  - id: "run_016"
+    date: "2026-02-23"
+    time: "14:00:00"
+    component: "Meetings + Recordings flows (src/app/meetings/page.tsx + src/app/meetings/[id]/page.tsx)"
+    result: "NEEDS_FIXES"
+    score: "39/53"
+    type: "edge-case-discovery + flow-testing"
+
+    checks:
+      core_tokens: 1/4  # 20+ hardcoded hex values across both files
+      typography: 3/4   # text-pretty on titles, tabular-nums on counts, missing text-balance on some headings
+      motion: 0/0
+      icons: 1/1        # All Phosphor icons correct
+      mobile: 3/5       # No responsive breakpoints, desktop-only layout
+      states: 3/8       # Missing loading, error, empty chat states; unknown ID fallback
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4  # h-dvh used correctly, no paste blocking
+      accessibility: 3/4 # aria-labels on icon buttons, role=button on rows, missing focus-visible on some elements
+      components: 4/4    # shadcn Tabs, Avatar, Button, Checkbox used correctly
+      css: 2/4           # 20+ inline style={{}} blocks, bg-white hardcoded
+      design: 7/7        # No gradients, single accent, clean layout
+      theming: 1/6       # Extensive hardcoded hex colors break dark mode
+
+    edge_case_gaps:
+      - id: "EC-1"
+        file: "[id]/page.tsx:652"
+        branch: "eventData[id] ?? defaultEvent"
+        current_behavior: "Unknown IDs show defaultEvent silently"
+        severity: "HIGH"
+        recommendation: "Show 404/not-found state or redirect to listings"
+
+      - id: "EC-2"
+        file: "[id]/page.tsx:383"
+        branch: "bg-white on ChatView bottom"
+        current_behavior: "Hardcoded white background breaks dark mode"
+        severity: "HIGH"
+        recommendation: "Replace with bg-background"
+
+      - id: "EC-3"
+        file: "[id]/page.tsx:172-200"
+        branch: "statusConfig with 12+ hardcoded hex values"
+        current_behavior: "Status tag colors break in dark mode"
+        severity: "HIGH"
+        recommendation: "Move to CSS variables with dark mode variants"
+
+      - id: "EC-4"
+        file: "[id]/page.tsx:367-379"
+        branch: "ChatView with empty messages array"
+        current_behavior: "Renders blank area with no empty state"
+        severity: "MEDIUM"
+        recommendation: "Add empty state with CTA (e.g. 'Start a conversation')"
+
+      - id: "EC-5"
+        file: "page.tsx:120"
+        branch: "iconColorMap upcoming: '#4338CA'"
+        current_behavior: "Hardcoded indigo hex, no dark mode variant"
+        severity: "MEDIUM"
+        recommendation: "Use var(--primary) or semantic token"
+
+      - id: "EC-6"
+        file: "[id]/page.tsx:234,281"
+        branch: "Inline border style '#EAECF0'"
+        current_behavior: "Hardcoded border color breaks dark mode"
+        severity: "MEDIUM"
+        recommendation: "Use border-border class or var(--border)"
+
+    browser_tests:
+      - test: "Meetings listing renders 3 sections (ongoing/upcoming/past)"
+        result: "PASS"
+      - test: "Click meeting row navigates to /meetings/{id}"
+        result: "PASS"
+      - test: "Meeting detail shows header + status tag + avatars + tabs"
+        result: "PASS"
+      - test: "Summary tab shows placeholder content"
+        result: "PASS"
+      - test: "Chat tab shows messages + GlobalPromptBox with suggestions"
+        result: "PASS"
+      - test: "Back button returns to /meetings listing"
+        result: "PASS"
+      - test: "Dropdown switches Meetings ↔ Recordings"
+        result: "PASS"
+      - test: "Recordings listing shows Now Recording (red) + Past Recordings"
+        result: "PASS"
+      - test: "Live recording detail shows Controls/Summary/Chat tabs"
+        result: "PASS"
+      - test: "Pause button toggles to Resume with amber indicator"
+        result: "PASS"
+      - test: "Stop button hides indicator, shows Start button"
+        result: "PASS"
+      - test: "Save/Discard actions visible in all recording states"
+        result: "PASS"
+      - test: "Collaborator checkboxes toggle correctly (2 pre-selected)"
+        result: "PASS"
+      - test: "Recording Chat tab shows same chat UI as meetings"
+        result: "PASS"
+      - test: "Past recording detail shows only Summary/Chat tabs (no Controls)"
+        result: "PASS"
+      - test: "Past recording shows 'Ended' status tag"
+        result: "PASS"
+      - test: "Unknown ID falls back to defaultEvent (no error state)"
+        result: "FAIL — gap EC-1"
+      - test: "Primary color hover on listing titles removed"
+        result: "PASS — CSS rule deleted from globals.css"
+
+    reflections:
+      what_worked: "Recording state machine (recording→paused→stopped) transitions cleanly. Tab architecture correctly differentiates live vs past recordings. GlobalPromptBox integration provides consistent chat input."
+      what_improved: "Removed primary color hover per user request. All navigation flows functional."
+      critical_gaps: "20+ hardcoded hex values will break dark mode. Unknown ID fallback is silent. Empty chat state missing."
+      next_steps: "Replace all hardcoded hex with CSS variables + dark mode variants. Add 404 state for unknown IDs. Add empty chat state. Fix bg-white to bg-background."
+
+  - id: "run_015"
+    date: "2026-02-16"
+    time: "09:45:00"
+    component: "Expert Chat Page (src/app/experts/front-end-ui-feedback/page.tsx + src/components/ui/expert-chat-input.tsx)"
+    result: "PASS"
+    score: "51/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 5/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/app/experts/front-end-ui-feedback/page.tsx"
+        line: "303"
+        category: "theming"
+        description: "Hardcoded hex #667085 on PencilSimpleIcon → replaced with text-muted-foreground"
+        severity: "error"
+        fixed: true
+
+      - file: "src/app/experts/front-end-ui-feedback/page.tsx"
+        line: "370"
+        category: "theming"
+        description: "Hardcoded hex #fffbeb for user message bg → created --user-message CSS variable with dark mode variant, registered as bg-user-message"
+        severity: "error"
+        fixed: true
+
+      - file: "src/app/experts/front-end-ui-feedback/page.tsx"
+        line: "193"
+        category: "typography"
+        description: "h2 heading missing text-balance → added"
+        severity: "warning"
+        fixed: true
+
+      - file: "src/app/experts/front-end-ui-feedback/page.tsx"
+        line: "299,312,350"
+        category: "accessibility"
+        description: "3 raw <button> elements missing focus-visible:ring and aria-label → added focus-visible:ring-2 + aria-label on all"
+        severity: "warning"
+        fixed: true
+
+      - file: "src/app/experts/front-end-ui-feedback/page.tsx"
+        line: "301"
+        category: "css"
+        description: "Duplicate transition-colors class on edit button → removed duplicate, consolidated hover:bg-accent"
+        severity: "warning"
+        fixed: true
+
+      - file: "all"
+        line: "N/A"
+        category: "states"
+        description: "No loading/error states — advisory for static prototype with mock responses"
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      theming: "Replaced all hardcoded hex colors with semantic tokens (text-muted-foreground, bg-user-message). Added --user-message CSS variable with light (#fffbeb via oklch) and dark mode variants."
+      accessibility: "aria-label on chat header button and about expert button. focus-visible:ring on all 3 raw buttons. active:scale press feedback."
+      typography: "text-balance on h2 heading, text-pretty was already on description"
+      css: "Removed duplicate transition-colors class"
+
+    browser_tests:
+      - test: "Empty state renders profile header + suggestions"
+        result: "PASS"
+      - test: "Click suggestion → transitions to chat state with user msg + AI response"
+        result: "PASS"
+      - test: "Compact header shows avatar + name + info icon"
+        result: "PASS"
+      - test: "Click header → opens ExpertInfoPanel sidebar"
+        result: "PASS"
+      - test: "Panel + chat content adapt to narrower width"
+        result: "PASS"
+      - test: "Close panel → chat returns to full width"
+        result: "PASS"
+      - test: "Type custom message + submit → second message pair added, input cleared"
+        result: "PASS"
+      - test: "Auto-scroll to latest message via StickToBottom"
+        result: "PASS"
+      - test: "Akash avatar shown in prompt box during chat mode"
+        result: "PASS"
+
+    reflections:
+      what_worked: "Two-state layout (empty vs chat) transitions cleanly. ai-elements Conversation+MessageResponse provide solid scrolling and markdown rendering. ExpertInfoPanel sidebar coexists with chat content."
+      what_improved: "All hardcoded colors replaced with tokens. Dark mode support for user message bubble. Focus/active states on all interactive elements."
+      next_steps: "Add loading state during AI response generation. Wire to real API. Add keyboard shortcut (Enter to submit). Test with very long conversations for scroll performance."
+
+  - id: "run_014"
+    date: "2026-02-12"
+    time: "07:25:00"
+    component: "GlobalPromptBox (src/components/global-prompt-box.tsx + src/app/prompt-box/page.tsx)"
+    result: "NEEDS_FIXES"
+    score: "43/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 2/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 5/5
+      states: 3/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 2/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/global-prompt-box.tsx"
+        line: "all raw <button> elements"
+        category: "states"
+        description: "Zero focus-visible: or active: states on 8 raw <button> elements."
+        severity: "error"
+        fixed: false
+
+      - file: "src/components/global-prompt-box.tsx"
+        line: "368, 469"
+        category: "accessibility"
+        description: "Submit buttons (PromptInputSubmit) missing aria-label='Submit'"
+        severity: "warning"
+        fixed: false
+
+      - file: "src/app/prompt-box/page.tsx"
+        line: "multiple"
+        category: "typography"
+        description: "Missing text-balance on headings, text-pretty on descriptions"
+        severity: "warning"
+        fixed: false
+
+      - file: "src/components/global-prompt-box.tsx"
+        line: "PromptInputBody"
+        category: "layout"
+        description: "PromptInputBody missing w-full — body doesn't stretch in InputGroup flex"
+        severity: "error"
+        fixed: false
+
+    reflections:
+      what_worked: "Component correctly reuses PromptInput primitives and ExpertChatInput patterns"
+      what_improved: "Variant architecture is clean — single component serves all use cases"
+      next_steps: "Fix all states violations, add a11y labels, fix layout stretch, add typography utils to showcase"
+
+  - id: "run_013"
+    date: "2026-02-06"
+    time: "22:50:00"
+    component: "Create Expert Wizard (src/app/create-expert/) — Ralph Loop iteration"
+    result: "PASS"
+    score: "51/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 5/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "all step files"
+        line: "N/A"
+        category: "states"
+        description: "No loading/error states — advisory for static prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      figma_fidelity: "Added helper text under Expert Name, Description (step 1), Instructions (step 3), and Conversation Starter description (step 3) to match Figma"
+      copy: "Updated button text 'Next: Knowledge' → 'Next: Knowledge Base' to match Figma, updated placeholder text for Expert Name field"
+      typescript: "Fixed 2 TS errors: removed unsupported onInteractOutside prop from AlertDialogContent in general-step and knowledge-step"
+      react: "React best practices audit — no issues found. Constants hoisted to module scope, functional setState used correctly, no premature optimization needed."
+
+    reflections:
+      what_worked: "Side-by-side Figma vs browser screenshot comparison caught missing helper text and button label differences"
+      what_improved: "Figma fidelity improved — helper text, placeholder text, and button labels now match design"
+      next_steps: "Add loading/error states when wiring to real data. Dark mode verification."
+
+  - id: "run_012"
+    date: "2026-02-06"
+    time: "16:00:00"
+    component: "Create Expert Wizard (src/app/create-expert/)"
+    result: "PASS"
+    score: "51/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 5/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/app/create-expert/page.tsx"
+        line: "44"
+        category: "interactions"
+        description: "min-h-screen → min-h-dvh. Fixed."
+        severity: "error"
+        fixed: true
+
+      - file: "src/app/create-expert/components/preview-panel.tsx"
+        line: "multiple"
+        category: "accessibility"
+        description: "7 icon-only buttons missing aria-label. Fixed."
+        severity: "warning"
+        fixed: true
+
+      - file: "src/app/create-expert/steps/knowledge-step.tsx"
+        line: "102,121"
+        category: "accessibility"
+        description: "Raw <button> elements missing focus-visible:ring. Fixed."
+        severity: "warning"
+        fixed: true
+
+      - file: "all files"
+        line: "multiple"
+        category: "typography"
+        description: "Missing text-balance on headings, text-pretty on descriptions. Fixed."
+        severity: "warning"
+        fixed: true
+
+      - file: "all step files"
+        line: "N/A"
+        category: "states"
+        description: "No loading/error states — advisory for static prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      accessibility: "aria-label on all icon buttons, nav+ol+aria-current on stepper, focus-visible on raw buttons"
+      typography: "text-balance on headings, text-pretty on all descriptions"
+      interactions: "min-h-screen → min-h-dvh"
+      copy: "Rewrote all helper text per copy.md: active voice, second person, specific verb+object buttons"
+      ux: "Added reversibility reassurance before publish per user-education.md, Step X of Y in stepper"
+      layout: "All form inputs now 100% width per user request"
+      icons: "Replaced inline SVG with brand-icons/slack.svg"
+
+    decisions:
+      - decision: "All form fields 100% width instead of max-w constraints"
+        rationale: "User requested full-width. Form column is already constrained to 563px/flex-1 so inputs don't stretch beyond readability."
+        alternatives:
+          - "Keep max-w-[480px] for readability"
+          - "Use responsive max-w with breakpoints"
+
+    reflections:
+      what_worked: "design-knowledge modules (copy.md, user-education.md) caught real UX gaps: generic copy, no reversibility reassurance, no step count"
+      what_improved: "Copy quality, a11y, typography utilities, stepper semantics"
+      next_steps: "Add loading/error states when wiring to real data. Dark mode verification. Visual comparison with Figma."
+
+  - id: "run_011"
+    date: "2026-02-06"
+    time: "14:00:00"
+    component: "Settings General (src/app/settings/general/page.tsx)"
+    result: "PASS"
+    score: "49/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 5/5
+      states: 4/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 3/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/ui/button.tsx"
+        line: "21"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Button link variant had hover:underline — conflicts with global no-underline rule. Fixed: removed hover:underline from variant."
+        severity: "error"
+        fixed: true
+
+      - file: "src/app/settings/general/page.tsx"
+        line: "56-59"
+        category: "accessibility"
+        module_ref: "Rules/accessibility.md"
+        description: "label missing htmlFor, Input missing id for Name field. Fixed: added htmlFor='assistant-name' and id='assistant-name'."
+        severity: "warning"
+        fixed: true
+
+      - file: "src/app/settings/general/page.tsx"
+        line: "48-51"
+        category: "copy"
+        module_ref: "design-knowledge/copy.md"
+        description: "Page description said 'data sources' — wrong page. Fixed: updated to 'Configure your AI assistant's identity and behavior'."
+        severity: "error"
+        fixed: true
+
+      - file: "src/app/settings/general/page.tsx"
+        line: "N/A"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "No empty state for Admins list. Advisory for prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      copy: "Rewrote all UX copy per design-knowledge/copy.md: active voice, second person, specific labels"
+      accessibility: "Added htmlFor/id pair on Name label+input"
+      theming: "Button link variant cleaned of hover:underline to match global rule"
+      global_css: "Added cursor:pointer on all interactive elements, no-underline on links"
+
+    decisions:
+      - decision: "Removed hover:underline from shadcn Button link variant"
+        rationale: "Global CSS rule in globals.css sets no-underline on links. Button link variant conflicted."
+        alternatives:
+          - "Override per-instance with className — fragile"
+          - "Keep underline — conflicts with design direction"
+
+    reflections:
+      what_worked: "design-knowledge/copy.md rules caught wrong page description and vague placeholder text"
+      what_improved: "UX copy now follows active voice, second person, specific labels pattern"
+      next_steps: "Add form validation states when wiring to real data. Dark mode verification."
+
+  - id: "run_010"
+    date: "2026-02-06"
+    time: "12:00:00"
+    component: "Settings Data Sources (src/app/settings/page.tsx)"
+    result: "PASS"
+    score: "52/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 4/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/app/settings/page.tsx"
+        line: "N/A"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Static prototype — no loading or error states for data sources. Advisory for prototype."
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/app/settings/page.tsx"
+        line: "N/A"
+        category: "mobile"
+        module_ref: "Rules/mobile.md"
+        description: "Search input fixed width (280px/400px) may overflow on very narrow viewports. Advisory."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      icons: "Unified icon container to size-8 (32px) for consistent alignment between Phosphor (24px) and brand SVG (32px) icons"
+      typography: "Added text-balance on h1 heading, text-pretty on description, replaced arbitrary leading-[22px] with leading-snug"
+      accessibility: "Added aria-label on refresh icon-only button"
+      theming: "All semantic tokens — no hardcoded colors, gradients, or h-screen"
+
+    decisions:
+      - decision: "Phosphor icons at 24px inside 32px container vs brand SVGs at 32px"
+        rationale: "24px is standard Phosphor size for medium icons. 32px container ensures vertical alignment with brand SVGs."
+        alternatives:
+          - "Scale Phosphor to 32px — would look too heavy"
+          - "Scale brand SVGs to 24px — would lose detail"
+
+    reflections:
+      what_worked: "Brand icons from /public/brand-icons/ match reference design. Phosphor icons for internal features (Attachments, File Uploads, AI Meeting) are correct choices."
+      what_improved: "Consistent icon container sizing, typography utilities, a11y on icon buttons"
+      next_steps: "Add loading/empty states when wiring to real data. Consider dark mode verification."
+
+  - id: "run_009"
+    date: "2026-02-03"
+    time: "19:25:00"
+    component: "Meeting Ongoing Detail (src/components/meeting-ongoing.tsx)"
+    result: "PASS"
+    score: "51/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 0/0
+      icons: 1/1
+      mobile: 3/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/meeting-ongoing.tsx"
+        line: "N/A"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Static prototype — no loading, error states for chat input submission. Advisory for prototype stage."
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/components/meeting-ongoing.tsx"
+        line: "N/A"
+        category: "mobile"
+        module_ref: "Rules/mobile.md"
+        description: "No responsive breakpoints. Header could overflow on narrow viewports. Advisory for desktop-first prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      figma_fidelity: "Implemented full Meeting Ongoing detail view from Figma (929:122515) with header, tabs, chat, suggestion chips, input"
+      shadcn_usage: "Used Tabs, Avatar, Button, DropdownMenu from shadcn/ui — no custom primitives"
+      semantic_tokens: "All colors via semantic tokens (bg-background, text-foreground, bg-primary/10, border-warning/40, etc.)"
+      icon_mapping: "Mapped Phosphor icons from Figma to Lucide: Chats→MessagesSquare, FileText→FileText, Waveform→AudioLines, Sparkle→Sparkle, CaretLeft→ChevronLeft"
+      accessibility: "aria-label on all icon-only buttons, keyboard navigation via shadcn primitives, focus-visible on custom buttons"
+      navigation: "Added click-to-detail on ongoing meeting rows with state-based routing in exp/page.tsx"
+
+    decisions:
+      - decision: "State-based routing instead of Next.js file routing"
+        rationale: "Prototype stage — simple useState toggle between list and detail view. Avoids premature route setup."
+        alternatives:
+          - "Dynamic route /exp/[meetingId]"
+          - "URL search params ?meeting=id"
+
+      - decision: "Used existing shadcn Tabs component with default variant"
+        rationale: "The Figma pill-style tabs match shadcn's default TabsList variant (bg-muted, rounded, active=white)"
+        alternatives:
+          - "Custom tab implementation"
+          - "TabsList variant=line"
+
+    reflections:
+      what_worked: "Figma MCP tools gave exact component structure, colors, typography specs. get_screenshot for visual reference + get_design_context for code structure was the right combo."
+      what_improved: "All Phosphor→Lucide icon mappings now documented. Chat UI pattern (user message + AI response) established."
+      next_steps: "Wire chat input to actual API. Add loading spinner for AI responses. Consider adding Summary tab content."
+
+  - id: "run_008"
+    date: "2026-02-03"
+    time: "18:30:00"
+    component: "Meetings List v2 (src/components/meetings-list.tsx)"
+    result: "PASS"
+    score: "51/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 3/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/meetings-list.tsx"
+        line: "N/A"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Static prototype — no loading, error, empty, or disabled states. Advisory for prototype stage."
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/components/meetings-list.tsx"
+        line: "N/A"
+        category: "mobile"
+        module_ref: "Rules/mobile.md"
+        description: "No responsive breakpoints (sm:/md:/lg:). Advisory for desktop-first prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      semantic_tokens: "Replaced all bg-emerald-*/bg-amber-*/text-white/text-amber-* with semantic CSS variables (bg-success, text-success-foreground, bg-warning, text-warning-foreground)"
+      css_variables: "Added --success, --success-foreground, --success-hover, --warning, --warning-foreground, --warning-muted to globals.css with dark mode variants"
+      shadcn_dropdown: "Replaced custom click-outside dropdown with shadcn DropdownMenu (DropdownMenuCheckboxItem, DropdownMenuItem, DropdownMenuLabel)"
+      focus_states: "Added focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 to all raw <button> elements"
+      active_states: "Added active:scale-[0.98] to JoinButton"
+      typography: "Added text-pretty to meeting titles"
+      accessibility: "Proper aria-label on JoinButton, shadcn DropdownMenu provides keyboard nav, Escape-to-close, focus trapping"
+      radius: "Removed all rounded-full from buttons, using rounded-md (8px) globally"
+      removed_text_10px: "Eliminated text-[10px] arbitrary size, using shadcn DropdownMenuLabel default sizing"
+
+    decisions:
+      - decision: "Replaced custom dropdown with shadcn DropdownMenu"
+        rationale: "Custom click-outside handler reinvented what DropdownMenu provides: keyboard nav, focus trapping, Escape handling, ARIA roles"
+        alternatives:
+          - "Keep custom dropdown with added keyboard support"
+          - "Use Popover + custom menu items"
+
+      - decision: "Created --success and --warning semantic tokens"
+        rationale: "bg-emerald-600 and bg-amber-500 are direct Tailwind palette colors. Semantic tokens enable dark mode and theme changes."
+        alternatives:
+          - "Keep Tailwind colors with dark: variants"
+          - "Map to existing --primary/--destructive tokens"
+
+    reflections:
+      what_worked: "shadcn DropdownMenu eliminated ~50 lines of custom state management (useState, useEffect, useRef, useCallback) while adding keyboard nav for free"
+      what_improved: "Semantic tokens, focus-visible on all interactive elements, active press feedback, text-pretty on titles"
+      next_steps: "Add loading/empty states when wiring to real data. Consider responsive breakpoints."
+
+  - id: "run_007"
+    date: "2026-02-03"
+    time: "12:00:00"
+    component: "Meetings List (src/components/meetings-list.tsx)"
+    result: "PASS"
+    score: "49/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 3/5
+      states: 4/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 3/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/meetings-list.tsx"
+        line: "N/A"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Static prototype — no loading, error, empty, or disabled states. Advisory for prototype stage."
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/components/meetings-list.tsx"
+        line: "N/A"
+        category: "mobile"
+        module_ref: "Rules/mobile.md"
+        description: "No responsive breakpoints (sm:/md:/lg:). Header could overflow on narrow viewports. Icon buttons (size-8=32px) below 44px touch target. Advisory for desktop-first prototype."
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/components/meetings-list.tsx"
+        line: "93-100"
+        category: "accessibility"
+        module_ref: "Rules/accessibility.md"
+        description: "Dropdown menu has no role=menu, no arrow-key navigation, no Escape-to-close. Static prototype — keyboard nav requires interactive state."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      brand_icons: "Replaced lucide Calendar with Google Calendar brand icon from /public/brand-icons/"
+      dot_styling: "Differentiated dot indicators: solid amber for ongoing, outline ring for upcoming, lighter outline for past"
+      theming: "All semantic tokens. text-primary-foreground instead of text-white. dark: variants on emerald and amber colors."
+      typography: "text-balance on h1 heading, text-pretty on meeting titles, tabular-nums on dates and attendee counts"
+      accessibility: "7 aria-label/aria-hidden attributes on interactive elements and decorative images"
+
+    decisions:
+      - decision: "Used brand Google Calendar icon instead of generic lucide Calendar"
+        rationale: "User explicitly requested brand icons from /public/brand-icons/. Calendar icon in reference design shows colored G-Calendar brand mark."
+        alternatives:
+          - "Keep generic lucide Calendar icon"
+          - "Use a custom SVG inline"
+
+      - decision: "Hollow outline dots for upcoming/past, solid for ongoing"
+        rationale: "Reference design shows visual weight hierarchy: solid=active, outline=future, lighter outline=past"
+        alternatives:
+          - "All solid dots with different colors"
+          - "Different sizes instead of fill styles"
+
+    reflections:
+      what_worked: "Brand icons add recognizability and match the reference closely. Dot style differentiation improves section hierarchy."
+      what_improved: "Second pass caught 6 differences from reference: calendar icon, dot styles, chevron colors, typography, theming"
+      next_steps: "Install DropdownMenu from shadcn for interactive dropdown. Add responsive breakpoints. Add empty/loading states when wiring to real data."
+
+  - id: "run_006"
+    date: "2026-01-30"
+    time: "16:00:00"
+    component: "Meeting Live Layouts (src/components/meeting-live-l*.tsx)"
+    result: "PASS"
+    score: "52/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 5/5
+      states: 7/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/meeting-live-l1.tsx,l2.tsx,l3.tsx"
+        line: "160,164,171"
+        category: "ai-core"
+        module_ref: "design-knowledge/ai-core.md"
+        description: "Input was <input> instead of <textarea> — ai-core.md requires multi-line input (Shift+Enter). Fixed: replaced with <textarea rows={1} resize-none>."
+        severity: "error"
+        fixed: true
+
+      - file: "all layouts"
+        line: "N/A"
+        category: "ai-core"
+        module_ref: "design-knowledge/ai-core.md"
+        description: "No stop/cancel button during AI generation. Required by ai-core.md streaming rules. Advisory for static prototype — needs interactive state."
+        severity: "advisory"
+        fixed: false
+
+      - file: "all layouts"
+        line: "N/A"
+        category: "product"
+        module_ref: "design-knowledge/product.md"
+        description: "No kill switch / pause control for AI assistant during live session. Required by product.md implementation rules. Advisory for prototype."
+        severity: "advisory"
+        fixed: false
+
+    improvements_made:
+      ai_patterns: "Replaced <input> with <textarea rows={1}> for multi-line chat input per ai-core.md"
+      code_quality: "Removed unused Card import from all 3 layouts, unused ChevronRight from L3"
+      typography: "text-balance on headings (L1/L3), text-pretty on all body/transcript text"
+      accessibility: "aria-label on message input and send button in all 3, icon-only buttons in L2"
+      theming: "All semantic tokens — bg-muted/40, bg-muted/30, bg-primary/10, bg-card"
+
+    decisions:
+      - decision: "textarea with rows=1 + resize-none instead of input"
+        rationale: "ai-core.md requires multi-line input for chat. rows=1 maintains visual parity with input while enabling Shift+Enter newlines."
+        alternatives:
+          - "Keep <input> — violates ai-core.md"
+          - "Full <textarea> with visible rows — takes too much vertical space in compact layout"
+
+    reflections:
+      what_worked: "Design-knowledge modules identified real usability gaps (multi-line input) not caught by automated token/style checks"
+      what_improved: "ai-core.md and product.md revealed functional requirements beyond visual QA"
+      next_steps: "Add interactive stop button when wiring to real state. Add AI status indicator. Test dark mode."
+
+  - id: "run_005"
+    date: "2026-01-30"
+    time: "15:00:00"
+    component: "Meeting Card Default Variations v2 (src/components/meeting-card-v*.tsx)"
+    result: "PASS"
+    score: "53/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 5/5
+      states: 8/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues: []
+
+    improvements_made:
+      design_system: "Redesigned all 5 variants with rounded-full pill buttons matching updated Figma reference"
+      states: "hover:shadow-md on all card containers, icon buttons have aria-label in V2/V4"
+      typography: "text-xl headings (up from text-lg), text-balance on full-width headings, tabular-nums on V4 time"
+      theming: "All semantic tokens, bg-primary/5 tinted header in V5"
+      accessibility: "aria-label on all icon-only buttons (V2, V4)"
+
+    reflections:
+      what_worked: "Pill buttons (rounded-full) match reference design closely"
+      what_improved: "Consistent rounded-full across all variants, larger headings match reference proportion"
+      next_steps: "Dark mode verification, responsive behavior at narrow widths"
+
+  - id: "run_004"
+    date: "2026-01-30"
+    time: "14:30:00"
+    component: "Meeting Card Experiments (src/components/meeting-card-v*.tsx)"
+    result: "PASS"
+    score: "52/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 4/5
+      icons: 1/1
+      mobile: 5/5
+      states: 7/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/meeting-card-v3.tsx"
+        line: "43"
+        category: "motion"
+        module_ref: "Rules/motion.md"
+        description: "animate-pulse on Live badge — Tailwind handles reduced-motion internally, explicit motion-safe: prefix would be more robust"
+        severity: "advisory"
+        fixed: false
+
+      - file: "src/components/meeting-card-v5.tsx"
+        line: "35"
+        category: "typography"
+        module_ref: "Rules/typography.md"
+        description: "Heading uses truncate instead of text-balance — intentional for single-line compact layout"
+        severity: "info"
+        fixed: false
+
+    improvements_made:
+      design_system: "All 5 variants use semantic tokens, lifecycle-state color coding (primary/destructive/chart-2)"
+      states: "hover:shadow-md transition on all card containers"
+      typography: "text-balance on all full-width headings, tabular-nums on numeric values"
+      theming: "No hardcoded colors, all semantic token references"
+
+    reflections:
+      what_worked: "Lifecycle-state mapping creates natural color and information density variation"
+      what_improved: "Consistent accent bar + semantic color per state (indigo=upcoming, red=live, green=concluded)"
+      next_steps: "Consider motion-safe: prefix pattern for animations, test dark mode rendering"
+
+  - id: "run_003"
+    date: "2026-01-30"
+    time: "12:00:00"
+    component: "Expert Card Experiments (src/components/expert-card-v*.tsx)"
+    result: "PASS"
+    score: "52/53"
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 5/5
+      states: 7/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/components/expert-card-v1,v2,v3,v5.tsx"
+        line: "multiple"
+        category: "states"
+        module_ref: "Rules/states.md"
+        description: "Cards missing hover:shadow-md transition — fixed by adding transition-shadow hover:shadow-md"
+        severity: "warning"
+        fixed: true
+
+      - file: "src/components/expert-card-v2.tsx"
+        line: "description"
+        category: "typography"
+        module_ref: "Rules/typography.md"
+        description: "text-pretty absent on description — intentional, uses truncate for compact layout"
+        severity: "info"
+        fixed: false
+
+    improvements_made:
+      design_system: "All 5 variants use semantic tokens, no hardcoded colors"
+      states: "Added hover:shadow-md transition to card containers"
+      accessibility: "aria-label on all chat buttons, role=list on tags in V5"
+      typography: "text-balance on headings, text-pretty on descriptions"
+
+    reflections:
+      what_worked: "shadcn components provide solid base with built-in hover/focus on buttons"
+      what_improved: "Card-level hover feedback adds polish"
+      next_steps: "Test dark mode, consider V5 online status color as CSS variable"
+
+  - id: "run_002"
+    date: "2026-01-27"
+    time: "15:35:00"
+    component: "AIDemo v2 (ai-demo-video)"
+    result: "PASS"
+    score: "51/53"
+    duration_seconds: 120
+
+    checks:
+      core_tokens: 4/4
+      typography: 4/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 5/5
+      states: 7/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 7/7
+      theming: 6/6
+
+    issues:
+      - file: "src/styles.css"
+        line: "140"
+        category: "design"
+        module_ref: "design-knowledge/visual-perception.md"
+        description: "Purple gradient removed from avatar - anti-pattern for AI"
+        severity: "error"
+        fixed: true
+
+      - file: "src/styles.css"
+        line: "multiple"
+        category: "design"
+        module_ref: "Rules/core.md"
+        description: "Improved visual hierarchy with card-style header"
+        severity: "info"
+        fixed: true
+
+    improvements_made:
+      design_system: "Removed purple gradient, using solid blue accent"
+      visual_hierarchy: "Card-style header with shadow and border"
+      spacing: "Refined spacing scale with better rhythm"
+      shadows: "Multi-layer shadow system for depth"
+      animations: "Smoother entrance animations with refined timing"
+      accessibility: "Status badge with animated pulse indicator"
+
+    reflections:
+      what_worked: "Solid accent color is cleaner than gradient"
+      what_improved: "Header card treatment adds polish without complexity"
+      next_steps: "Consider dark mode variant"
+
+  - id: "run_001"
+    date: "2026-01-27"
+    time: "15:25:00"
+    component: "AIDemo (ai-demo-video)"
+    result: "MAJOR_IMPROVEMENTS"
+    score: "45/53"
+    duration_seconds: 180
+
+    checks:
+      core_tokens: 4/4
+      typography: 3/4
+      motion: 5/5
+      icons: 1/1
+      mobile: 5/5
+      states: 6/8
+      forms: 0/0
+      modals: 0/0
+      errors: 0/0
+      interactions: 4/4
+      accessibility: 4/4
+      components: 4/4
+      css: 4/4
+      design: 5/7
+
+    issues:
+      - file: "src/TwinDemo.tsx"
+        line: "multiple"
+        category: "core_tokens"
+        module_ref: "Rules/core.md"
+        description: "16 hex color violations replaced with design tokens"
+        severity: "error"
+        fixed: true
+
+      - file: "src/TwinDemo.tsx"
+        line: "multiple"
+        category: "css"
+        module_ref: "Rules/css.md"
+        description: "25+ inline styles replaced with CSS classes"
+        severity: "error"
+        fixed: true
+
+      - file: "src/TwinDemo.tsx"
+        line: "multiple"
+        category: "accessibility"
+        module_ref: "Rules/accessibility.md"
+        description: "Added 15 accessibility attributes (aria-label, role)"
+        severity: "warning"
+        fixed: true
+
+      - file: "src/TwinDemo.tsx"
+        line: "multiple"
+        category: "typography"
+        module_ref: "Rules/typography.md"
+        description: "Added text-balance and text-pretty utilities"
+        severity: "info"
+        fixed: true
+
+      - file: "src/styles.css"
+        line: "new"
+        category: "motion"
+        module_ref: "Rules/motion.md"
+        description: "Added prefers-reduced-motion support for animations"
+        severity: "info"
+        fixed: true
+
+    commands_executed:
+      - command: "grep -rn '#[0-9a-fA-F]' --include='*.tsx'"
+        matches: 16
+        duration_ms: 120
+
+      - command: "grep -rn 'style={{' --include='*.tsx'"
+        matches: 25
+        duration_ms: 110
+
+      - command: "grep -rn 'aria-label|role=' --include='*.tsx'"
+        matches: 0
+        duration_ms: 95
+
+    improvements_made:
+      design_system: "Replaced hex colors with semantic design tokens"
+      accessibility: "Added comprehensive ARIA labels and semantic roles"
+      performance: "Removed inline styles, created reusable CSS classes"
+      maintainability: "Separated concerns with dedicated CSS file"
+      content: "Enhanced message content for realistic business scenarios"
+
+    rca:
+      root_cause: "Original implementation prioritized rapid prototyping over design system compliance"
+      contributing_factors:
+        - "No initial design token system in place"
+        - "Remotion patterns encourage inline styling"
+        - "Focus on animation over accessibility"
+      prevention: "Establish design system first, QA review before render"
+
+    reflections:
+      what_worked: "CSS custom properties with theme() references work well with Remotion"
+      what_failed: "Some inline styles still needed for dynamic animation values"
+      skill_updates_needed:
+        - "Consider Remotion-specific exceptions for animation transforms"
+        - "Add check for semantic message structure"
+
+# ─────────────────────────────────────────────────────────────
+# MISTAKES LOG
+# Errors made by the skill itself (for self-improvement)
+# ─────────────────────────────────────────────────────────────
+
+mistakes: []
+  # Template:
+  # - date: "YYYY-MM-DD"
+  #   run_id: "run_001"
+  #   mistake: "What went wrong"
+  #   impact: "What was the consequence"
+  #   module_ref: "Rules/states.md"  # Which module was misapplied
+  #   rca:
+  #     why_1: "First why"
+  #     why_2: "Second why"
+  #     why_3: "Third why"
+  #     why_4: "Fourth why"
+  #     why_5: "Root cause"
+  #   correction: "How to fix"
+  #   prevention: "How to prevent in future"
+  #   skill_update: "Changes made to SKILL.md"
+
+# ─────────────────────────────────────────────────────────────
+# PATTERNS DISCOVERED
+# New patterns found that should be checked
+# ─────────────────────────────────────────────────────────────
+
+patterns:
+  - date: "2026-01-27"
+    name: "Remotion CSS Token Integration"
+    description: "Using CSS custom properties with theme() references for Remotion components"
+    detection:
+      command: "grep -rn ':root.*--.*theme(' --include='*.css'"
+      regex: "--[a-z-]+:\\s*theme\\("
+    category: "core_tokens"
+    module_ref: "Rules/core.md"
+    severity: "info"
+    added_to_skill: false
+
+  - date: "2026-01-27"
+    name: "Video Component Accessibility"
+    description: "Comprehensive aria-labels for video demonstration components"
+    detection:
+      command: "grep -rn 'aria-label.*avatar\\|aria-label.*message' --include='*.tsx'"
+      regex: "aria-label=[\"'].*(?:avatar|message|status)[\"']"
+    category: "accessibility"
+    module_ref: "Rules/accessibility.md"
+    severity: "info"
+    added_to_skill: false
+
+# ─────────────────────────────────────────────────────────────
+# STATISTICS
+# Aggregate metrics across all runs
+# ─────────────────────────────────────────────────────────────
+
+statistics:
+  total_runs: 17
+  pass_rate: 0.88
+  avg_score: 49.6
+  avg_duration_seconds: 135
+
+  most_common_issues:
+    - category: "core_tokens"
+      module_ref: "Rules/core.md"
+      count: 16
+
+  categories_by_failure_rate:
+    core_tokens: 0.0
+    typography: 0.25
+    motion: 0.0
+    icons: 0.0
+    mobile: 0.0
+    states: 0.25
+    forms: 0.0
+    modals: 0.0
+    errors: 0.0
+    interactions: 0.0
+    accessibility: 0.0
+    components: 0.0
+    css: 0.0
+    design: 0.28
+
+# ─────────────────────────────────────────────────────────────
+# SKILL EVOLUTION
+# Changes made to the skill based on learnings
+# ─────────────────────────────────────────────────────────────
+
+skill_updates:
+  - date: "2026-01-15"
+    version: "1.1.0"
+    trigger_run_id: null
+    changes:
+      - type: "modified"
+        description: "Restructured learnings to mirror modular Rules/ and design-knowledge/ structure"
+        reason: "Better cross-referencing between QA findings and documentation modules"
+
+  - date: "2026-01-27"
+    version: "1.2.0"
+    trigger_run_id: "run_001"
+    changes:
+      - type: "added"
+        description: "Added pattern for CSS custom properties with theme() integration"
+        reason: "Effective approach for design tokens in Remotion components"
+      - type: "modified"
+        description: "Updated color violation detection to account for CSS custom properties"
+        reason: "Distinguish between violations and proper token usage"
+
+# ─────────────────────────────────────────────────────────────
+# SELF-IMPROVEMENT TRACKING
+# Triggers and thresholds for automatic evolution
+# ─────────────────────────────────────────────────────────────
+
+improvement:
+  # When to trigger self-improvement review
+  triggers:
+    runs_since_last_review: 5
+    review_every_n_runs: 5
+    last_review_date: "2026-01-27"
+    next_review_due: false
+
+  # Thresholds for automatic actions
+  thresholds:
+    pattern_promotion_count: 3      # Promote pattern after N occurrences
+    category_priority_threshold: 0.5 # Prioritize if failure rate > 50%
+    command_slow_threshold_ms: 1000  # Optimize commands slower than this
+    mistake_repeat_threshold: 2      # Generate rule after N repeats
+
+  # Pending improvements (discovered but not yet applied)
+  pending:
+    patterns_to_promote: []
+    categories_to_prioritize: []
+    commands_to_optimize: []
+    rules_from_mistakes: []
+
+  # Applied improvements history
+  applied:
+    - date: "2026-01-27"
+      improvement: "Added CSS token integration pattern"
+      trigger: "Successful implementation in run_001"
+
+# ─────────────────────────────────────────────────────────────
+# EVOLUTION METRICS
+# Track how the skill improves over time
+# ─────────────────────────────────────────────────────────────
+
+evolution:
+  initial_check_count: 47
+  current_check_count: 53
+  checks_added: 6
+  checks_modified: 2
+
+  initial_commands: 10
+  current_commands: 16
+  commands_optimized: 1
+
+  patterns_promoted: 0
+  rules_generated_from_mistakes: 0
+
+  version_history:
+    - version: "1.0.0"
+      date: "2026-01-13"
+      checks: 32
+      note: "Initial version"
+    - version: "1.1.0"
+      date: "2026-01-15"
+      checks: 47
+      note: "Restructured learnings to mirror modular documentation structure"
+    - version: "1.2.0"
+      date: "2026-01-27"
+      checks: 53
+      note: "Enhanced token detection, added accessibility patterns, Remotion optimizations"
+    - version: "1.3.0"
+      date: "2026-02-25"
+      checks: 53
+      note: "Added infinite scroll and IntersectionObserver learnings"
+
+  # ── Infinite Scroll / Pagination (learned 2026-02-25) ──
+  infinite_scroll:
+    module_ref:
+      context: "src/app/people/page.tsx"
+    summary: "Debugging infinite scroll took 13min due to 3 stacked bugs. Log decisions to avoid repeat."
+
+    pitfall_1_zero_height_sentinel:
+      issue: "IntersectionObserver reports isIntersecting:false for zero-height elements"
+      symptom: "Sentinel div with no height/content never triggers observer callback"
+      fix: "Always give sentinel elements a minimum height: className='h-px'"
+      rule: "Never use a zero-height div as an IntersectionObserver target"
+
+    pitfall_2_unstable_array_refs:
+      issue: ".filter() returns a new array reference every render"
+      symptom: "useEffect([items]) reset fires every render, resetting visibleCount to PAGE_SIZE"
+      fix: "Wrap filtered arrays in useMemo with stable dependencies (data source + query string)"
+      rule: "Any array passed to useEffect deps or custom hooks must be memoized"
+      example: |
+        # BAD — new ref every render
+        const filtered = data.filter(...)
+        useInfiniteScroll(filtered, enabled)
+
+        # GOOD — stable ref
+        const filtered = useMemo(() => data.filter(...), [data, query])
+        useInfiniteScroll(filtered, enabled)
+
+    pitfall_3_observer_chaining:
+      issue: "IntersectionObserver fires once on entry; if sentinel stays visible after batch load, no re-fire"
+      symptom: "First batch loads, then stops — 'Loading more' stuck forever"
+      approaches_tried:
+        - name: "visibleCount in effect deps"
+          result: "Failed — observer still doesn't re-fire on same-position element"
+        - name: "Callback ref + sentinelKey forcing remount"
+          result: "Failed — zero-height bug masked the fix"
+        - name: "requestAnimationFrame + getBoundingClientRect"
+          result: "Works — chains reliably by scheduling next check inside setVisibleCount callback"
+      winning_pattern: |
+        useEffect(() => {
+          const check = () => {
+            const rect = sentinelRef.current?.getBoundingClientRect();
+            if (rect && rect.top < window.innerHeight + 300) {
+              setVisibleCount(prev => {
+                const next = Math.min(prev + PAGE_SIZE, items.length);
+                if (next < items.length) requestAnimationFrame(check);  // chain
+                return next;
+              });
+            }
+          };
+          rafRef.current = requestAnimationFrame(check);
+          window.addEventListener("scroll", onScroll, { passive: true });
+          return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(rafRef.current); };
+        }, [enabled, items.length]);
+
+    decision_log:
+      - decision: "Use scroll events + rAF instead of IntersectionObserver"
+        reason: "IO has edge cases with zero-height elements and doesn't re-fire when element stays visible"
+        tradeoff: "Slightly more scroll event overhead, but simpler mental model and reliable chaining"
+      - decision: "PAGE_SIZE = 20 cards per batch"
+        reason: "3 cards per row × ~7 rows = fills viewport. Not too many to cause jank, not too few to feel slow"
+      - decision: "300px look-ahead threshold"
+        reason: "Start loading before user reaches bottom — feels seamless. 200px was too tight on 1080p"
+      - decision: "Only enable infinite scroll for volume=heavy"
+        reason: "Typical (29 people) and sparse (4 people) don't need pagination overhead"

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(CLAUDE.md)",
+      "Write(SOUL.md)",
+      "Write(AGENTS.md)",
+      "Write(PRODUCT.md)",
+      "Write(docs/**)",
+      "Write(src/**)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(wc *)",
+      "Bash(echo *)",
+      "Bash(cat *)",
+      "Bash(ls *)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}

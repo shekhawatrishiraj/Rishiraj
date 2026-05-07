@@ -1,0 +1,43 @@
+schema_version: "1.0.0"
+last_updated: ""
+
+# Usage log — what was searched, what candidates surfaced, what was chosen
+usage_log: []
+# Entry format:
+# - date: YYYY-MM-DD
+#   query: "what pattern for displaying API keys"
+#   candidates: [stat-card-horizontal, key-value-inline]
+#   chosen: key-value-inline
+#   context: "settings page, low density, read-only"
+
+# Intake log — patterns added to the directory
+intake_log: []
+# Entry format:
+# - date: YYYY-MM-DD
+#   pattern_id: stat-card-horizontal
+#   source: screenshot
+#   intake_notes: "from Linear dashboard"
+
+# Rejections — patterns considered but not chosen (most valuable signal)
+rejections: []
+# Entry format:
+# - date: YYYY-MM-DD
+#   pattern_id: stat-card-horizontal
+#   rejected_for: key-value-inline
+#   reason: "read-only context, no need for action affordance"
+#   context: "API settings page"
+
+# Preferences — patterns Akash has shown strong preference for
+preferences: []
+# Entry format:
+# - pattern_id: key-value-inline
+#   preference: "prefers this for settings pages regardless of density"
+#   observed: YYYY-MM-DD
+
+# Statistics
+statistics:
+  total_searches: 0
+  total_intakes: 0
+  total_rejections: 0
+  most_searched_category: ""
+  most_used_pattern: ""
